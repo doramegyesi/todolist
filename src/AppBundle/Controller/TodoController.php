@@ -89,7 +89,7 @@ class TodoController extends Controller{
             ->add('description', TextareaType::class, array('attr' => array('class' => 'form-control', 'style' => 'margin-bottom:15px')))
             ->add('priority', ChoiceType::class, array('choices' => array('Low' => 'Low', 'Normal' => 'Normal', 'High' => 'High'), 'attr' => array('class' => 'form-control', 'style' => 'margin-bottom:15px')))
             ->add('due_date', DateTimeType::class, array('attr' => array('class' => 'formcontrol', 'style' => 'margin-bottom:15px')))
-            ->add('save', SubmitType::class, array('label' => 'Create Todo', 'attr' => array('class' => 'btn btn-primary', 'style' => 'margin-bottom:15px')))
+            ->add('save', SubmitType::class, array('label' => 'Update Todo', 'attr' => array('class' => 'btn btn-primary', 'style' => 'margin-bottom:15px')))
             ->getForm();
         $form->handleRequest($request);
 
@@ -132,5 +132,16 @@ class TodoController extends Controller{
         return $this->render('todo/details.html.twig', array(
             'todo' => $todo
         ));
+    }
+
+    /**
+     * @Route("/todo/delete/{id}", name="todo_delete")
+     */
+    public function deleteAction($id){
+        $em = $this->getDoctrine()->getManager();
+        $todo = $em->getRepository('AppBundle:Todo')->find($id);
+        $em->remove($todo);
+        $em->flush();
+        return $this->redirectToRoute('todo_list');
     }
 }
