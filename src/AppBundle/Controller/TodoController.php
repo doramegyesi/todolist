@@ -40,8 +40,27 @@ class TodoController extends Controller{
             ->add('save', SubmitType::class, array('label' => 'Create Todo', 'attr' => array('class' => 'btn btn-primary', 'style' => 'margin-bottom:15px')))
             ->getForm();
         $form->handleRequest($request);
+
         if($form->isSubmitted() && $form->isValid()) {
-            die('SUBMITTED');
+            //get the data
+            $name = $form['name']->getData();
+            $category = $form['category']->getData();
+            $description = $form['description']->getData();
+            $priority = $form['priority']->getData();
+            $due_date = $form['due_date']->getData();
+            $now = new\DateTime('now');
+
+            $todo->setName($name);
+            $todo->setCategory($category);
+            $todo->setDescription($description);
+            $todo->setPriority($priority);
+            $todo->setDueDate($due_date);
+            $todo->setCreateDate($now);
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($todo);
+            $em->flush();
+            return $this->redirectToRoute('todo_list');
         }
         return $this->render('todo/create.html.twig', array(
             'form' => $form->createView()
